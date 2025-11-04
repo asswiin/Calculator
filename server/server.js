@@ -4,8 +4,8 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import path from "path"; // <-- IMPORT THIS
-import { fileURLToPath } from "url"; // <-- IMPORT THIS
+import path from "path";
+import { fileURLToPath } from "url";
 import calcRoutes from "./routes/CalcRoute.js";
 
 dotenv.config();
@@ -22,20 +22,21 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.log(err));
 
-// API routes - These should come BEFORE the static serving
+// === 1. DEFINE API ROUTES FIRST 
 app.use("/api/calculations", calcRoutes);
 
-// --- ADD THIS SECTION FOR PRODUCTION ---
-// This code serves the built React app from the 'client/build' folder
+
+// === 2. SERVE REACT APP (The "catch-all" handler) ========
 if (process.env.NODE_ENV === "production") {
+  // Serve the static files from the React app
   app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
+  // Handles any requests that don't match the ones above
   app.get('/*', (req, res) => {
     res.sendFile(path.resolve(__dirname, '..', 'client', 'build', 'index.html'));
   });
 }
-// ----------------------------------------
 
-// Use the port Render provides, or 5000 for local development
+// === 3. START THE SERVER =================================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
