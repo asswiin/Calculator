@@ -1,0 +1,18 @@
+# .dockerignore
+
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build artifacts
+client/build/
+
+# Env files (NEVER commit secrets)
+.env
+client/.env
+server/.env
+
+# Git and OS files
+.git
+.DS_Store
