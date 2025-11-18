@@ -13,7 +13,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// These two lines are needed for __dirname in ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -30,15 +29,19 @@ app.use("/api/calculations", calcRoutes);
 
 // =========================================================
 // === 2. SERVE REACT APP (The "catch-all" handler) ========
-// === THIS MUST BE LAST, AFTER ALL API ROUTES ============
+// === THIS IS THE NEW, MORE ROBUST CODE BLOCK ============
 // =========================================================
 if (process.env.NODE_ENV === "production") {
-  // Serve the static files from the React app
-  app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
+  // Define the path to the static build directory
+  const buildPath = path.join(__dirname, '..', 'client', 'build');
+  
+  // Serve static files from the React build directory
+  app.use(express.static(buildPath));
 
-  // Handles any requests that don't match the ones above
-  app.get('/*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '..', 'client', 'build', 'index.html'));
+  // For any other request, send back the index.html file
+  // This allows client-side routing to work
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
   });
 }
 
