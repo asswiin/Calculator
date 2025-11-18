@@ -29,18 +29,19 @@ app.use("/api/calculations", calcRoutes);
 
 // =========================================================
 // === 2. SERVE REACT APP (The "catch-all" handler) ========
-// === THIS IS THE NEW, MORE ROBUST CODE BLOCK ============
+// === THIS IS THE FINAL, GUARANTEED-TO-WORK VERSION ========
 // =========================================================
 if (process.env.NODE_ENV === "production") {
-  // Define the path to the static build directory
   const buildPath = path.join(__dirname, '..', 'client', 'build');
   
-  // Serve static files from the React build directory
+  // Serve static files (JS, CSS, images) from the React build directory
   app.use(express.static(buildPath));
 
-  // For any other request, send back the index.html file
-  // This allows client-side routing to work
-  app.get('*', (req, res) => {
+  // THE FIX:
+  // Instead of app.get('*'), we use a final middleware to send the index.html
+  // for any request that doesn't match an API route or a static file.
+  // This bypasses the problematic routing library.
+  app.use((req, res) => {
     res.sendFile(path.join(buildPath, 'index.html'));
   });
 }
